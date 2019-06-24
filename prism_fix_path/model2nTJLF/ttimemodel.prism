@@ -1,0 +1,930 @@
+mdp
+
+const double addServer_LATENCY = 120;
+const int HORIZON = 5;
+const double PERIOD = 60;
+const int DIMMER_LEVELS = 3;
+const int ini_dimmer = 1;
+const int MAX_SERVERS_A = 1;
+const int MAX_SERVERS_B = 1;
+const int MAX_SERVERS_C = 1;
+const int ini_servers_A = 1;
+const int ini_servers_B = 0;
+const int ini_servers_C = 0;
+const int ini_addServerA_state = 0;
+const int ini_addServerB_state = 0;
+const int ini_addServerC_state = 0;
+const double SERVERA_COST_SEC = 1;
+const double SERVERB_COST_SEC = 0.7;
+const double SERVERC_COST_SEC = 0.5;
+const double MAX_ARRIVALA_CAPACITY = 200;
+const double MAX_ARRIVALA_CAPACITY_LOW = 400;
+const double MAX_ARRIVALB_CAPACITY = 140;
+const double MAX_ARRIVALB_CAPACITY_LOW = 280;
+const double MAX_ARRIVALC_CAPACITY = 100;
+const double MAX_ARRIVALC_CAPACITY_LOW = 200;
+const double penalty = -0.25;
+const int ini_traffic_A = 4;
+const int ini_traffic_B = 0;
+const int ini_traffic_C = 0;
+const double interArrivalScaleFactorForDecision = 1;
+
+
+module environment
+s : [0..201] init 0;
+[tick] s = 0 -> 
+	0.185 : (s' = 1)
+	+ 0.63 : (s' = 2)
+	+ 0.185 : (s' = 3);
+[tick] s = 3 -> 
+	0.185 : (s' = 4)
+	+ 0.63 : (s' = 5)
+	+ 0.185 : (s' = 6);
+[tick] s = 6 -> 
+	0.185 : (s' = 7)
+	+ 0.63 : (s' = 8)
+	+ 0.185 : (s' = 9);
+[tick] s = 9 -> 
+	0.185 : (s' = 10)
+	+ 0.63 : (s' = 11)
+	+ 0.185 : (s' = 12);
+[tick] s = 12 -> 
+	1 : (s' = 13);
+[tick] s = 11 -> 
+	1 : (s' = 14);
+[tick] s = 10 -> 
+	1 : (s' = 15);
+[tick] s = 8 -> 
+	0.185 : (s' = 16)
+	+ 0.63 : (s' = 17)
+	+ 0.185 : (s' = 18);
+[tick] s = 18 -> 
+	1 : (s' = 19);
+[tick] s = 17 -> 
+	1 : (s' = 20);
+[tick] s = 16 -> 
+	1 : (s' = 21);
+[tick] s = 7 -> 
+	0.185 : (s' = 22)
+	+ 0.63 : (s' = 23)
+	+ 0.185 : (s' = 24);
+[tick] s = 24 -> 
+	1 : (s' = 25);
+[tick] s = 23 -> 
+	1 : (s' = 26);
+[tick] s = 22 -> 
+	1 : (s' = 27);
+[tick] s = 5 -> 
+	0.185 : (s' = 28)
+	+ 0.63 : (s' = 29)
+	+ 0.185 : (s' = 30);
+[tick] s = 30 -> 
+	0.185 : (s' = 31)
+	+ 0.63 : (s' = 32)
+	+ 0.185 : (s' = 33);
+[tick] s = 33 -> 
+	1 : (s' = 34);
+[tick] s = 32 -> 
+	1 : (s' = 35);
+[tick] s = 31 -> 
+	1 : (s' = 36);
+[tick] s = 29 -> 
+	0.185 : (s' = 37)
+	+ 0.63 : (s' = 38)
+	+ 0.185 : (s' = 39);
+[tick] s = 39 -> 
+	1 : (s' = 40);
+[tick] s = 38 -> 
+	1 : (s' = 41);
+[tick] s = 37 -> 
+	1 : (s' = 42);
+[tick] s = 28 -> 
+	0.185 : (s' = 43)
+	+ 0.63 : (s' = 44)
+	+ 0.185 : (s' = 45);
+[tick] s = 45 -> 
+	1 : (s' = 46);
+[tick] s = 44 -> 
+	1 : (s' = 47);
+[tick] s = 43 -> 
+	1 : (s' = 48);
+[tick] s = 4 -> 
+	0.185 : (s' = 49)
+	+ 0.63 : (s' = 50)
+	+ 0.185 : (s' = 51);
+[tick] s = 51 -> 
+	0.185 : (s' = 52)
+	+ 0.63 : (s' = 53)
+	+ 0.185 : (s' = 54);
+[tick] s = 54 -> 
+	1 : (s' = 55);
+[tick] s = 53 -> 
+	1 : (s' = 56);
+[tick] s = 52 -> 
+	1 : (s' = 57);
+[tick] s = 50 -> 
+	0.185 : (s' = 58)
+	+ 0.63 : (s' = 59)
+	+ 0.185 : (s' = 60);
+[tick] s = 60 -> 
+	1 : (s' = 61);
+[tick] s = 59 -> 
+	1 : (s' = 62);
+[tick] s = 58 -> 
+	1 : (s' = 63);
+[tick] s = 49 -> 
+	0.185 : (s' = 64)
+	+ 0.63 : (s' = 65)
+	+ 0.185 : (s' = 66);
+[tick] s = 66 -> 
+	1 : (s' = 67);
+[tick] s = 65 -> 
+	1 : (s' = 68);
+[tick] s = 64 -> 
+	1 : (s' = 69);
+[tick] s = 2 -> 
+	0.185 : (s' = 70)
+	+ 0.63 : (s' = 71)
+	+ 0.185 : (s' = 72);
+[tick] s = 72 -> 
+	0.185 : (s' = 73)
+	+ 0.63 : (s' = 74)
+	+ 0.185 : (s' = 75);
+[tick] s = 75 -> 
+	0.185 : (s' = 76)
+	+ 0.63 : (s' = 77)
+	+ 0.185 : (s' = 78);
+[tick] s = 78 -> 
+	1 : (s' = 79);
+[tick] s = 77 -> 
+	1 : (s' = 80);
+[tick] s = 76 -> 
+	1 : (s' = 81);
+[tick] s = 74 -> 
+	0.185 : (s' = 82)
+	+ 0.63 : (s' = 83)
+	+ 0.185 : (s' = 84);
+[tick] s = 84 -> 
+	1 : (s' = 85);
+[tick] s = 83 -> 
+	1 : (s' = 86);
+[tick] s = 82 -> 
+	1 : (s' = 87);
+[tick] s = 73 -> 
+	0.185 : (s' = 88)
+	+ 0.63 : (s' = 89)
+	+ 0.185 : (s' = 90);
+[tick] s = 90 -> 
+	1 : (s' = 91);
+[tick] s = 89 -> 
+	1 : (s' = 92);
+[tick] s = 88 -> 
+	1 : (s' = 93);
+[tick] s = 71 -> 
+	0.185 : (s' = 94)
+	+ 0.63 : (s' = 95)
+	+ 0.185 : (s' = 96);
+[tick] s = 96 -> 
+	0.185 : (s' = 97)
+	+ 0.63 : (s' = 98)
+	+ 0.185 : (s' = 99);
+[tick] s = 99 -> 
+	1 : (s' = 100);
+[tick] s = 98 -> 
+	1 : (s' = 101);
+[tick] s = 97 -> 
+	1 : (s' = 102);
+[tick] s = 95 -> 
+	0.185 : (s' = 103)
+	+ 0.63 : (s' = 104)
+	+ 0.185 : (s' = 105);
+[tick] s = 105 -> 
+	1 : (s' = 106);
+[tick] s = 104 -> 
+	1 : (s' = 107);
+[tick] s = 103 -> 
+	1 : (s' = 108);
+[tick] s = 94 -> 
+	0.185 : (s' = 109)
+	+ 0.63 : (s' = 110)
+	+ 0.185 : (s' = 111);
+[tick] s = 111 -> 
+	1 : (s' = 112);
+[tick] s = 110 -> 
+	1 : (s' = 113);
+[tick] s = 109 -> 
+	1 : (s' = 114);
+[tick] s = 70 -> 
+	0.185 : (s' = 115)
+	+ 0.63 : (s' = 116)
+	+ 0.185 : (s' = 117);
+[tick] s = 117 -> 
+	0.185 : (s' = 118)
+	+ 0.63 : (s' = 119)
+	+ 0.185 : (s' = 120);
+[tick] s = 120 -> 
+	1 : (s' = 121);
+[tick] s = 119 -> 
+	1 : (s' = 122);
+[tick] s = 118 -> 
+	1 : (s' = 123);
+[tick] s = 116 -> 
+	0.185 : (s' = 124)
+	+ 0.63 : (s' = 125)
+	+ 0.185 : (s' = 126);
+[tick] s = 126 -> 
+	1 : (s' = 127);
+[tick] s = 125 -> 
+	1 : (s' = 128);
+[tick] s = 124 -> 
+	1 : (s' = 129);
+[tick] s = 115 -> 
+	0.185 : (s' = 130)
+	+ 0.63 : (s' = 131)
+	+ 0.185 : (s' = 132);
+[tick] s = 132 -> 
+	1 : (s' = 133);
+[tick] s = 131 -> 
+	1 : (s' = 134);
+[tick] s = 130 -> 
+	1 : (s' = 135);
+[tick] s = 1 -> 
+	0.185 : (s' = 136)
+	+ 0.63 : (s' = 137)
+	+ 0.185 : (s' = 138);
+[tick] s = 138 -> 
+	0.185 : (s' = 139)
+	+ 0.63 : (s' = 140)
+	+ 0.185 : (s' = 141);
+[tick] s = 141 -> 
+	0.185 : (s' = 142)
+	+ 0.63 : (s' = 143)
+	+ 0.185 : (s' = 144);
+[tick] s = 144 -> 
+	1 : (s' = 145);
+[tick] s = 143 -> 
+	1 : (s' = 146);
+[tick] s = 142 -> 
+	1 : (s' = 147);
+[tick] s = 140 -> 
+	0.185 : (s' = 148)
+	+ 0.63 : (s' = 149)
+	+ 0.185 : (s' = 150);
+[tick] s = 150 -> 
+	1 : (s' = 151);
+[tick] s = 149 -> 
+	1 : (s' = 152);
+[tick] s = 148 -> 
+	1 : (s' = 153);
+[tick] s = 139 -> 
+	0.185 : (s' = 154)
+	+ 0.63 : (s' = 155)
+	+ 0.185 : (s' = 156);
+[tick] s = 156 -> 
+	1 : (s' = 157);
+[tick] s = 155 -> 
+	1 : (s' = 158);
+[tick] s = 154 -> 
+	1 : (s' = 159);
+[tick] s = 137 -> 
+	0.185 : (s' = 160)
+	+ 0.63 : (s' = 161)
+	+ 0.185 : (s' = 162);
+[tick] s = 162 -> 
+	0.185 : (s' = 163)
+	+ 0.63 : (s' = 164)
+	+ 0.185 : (s' = 165);
+[tick] s = 165 -> 
+	1 : (s' = 166);
+[tick] s = 164 -> 
+	1 : (s' = 167);
+[tick] s = 163 -> 
+	1 : (s' = 168);
+[tick] s = 161 -> 
+	0.185 : (s' = 169)
+	+ 0.63 : (s' = 170)
+	+ 0.185 : (s' = 171);
+[tick] s = 171 -> 
+	1 : (s' = 172);
+[tick] s = 170 -> 
+	1 : (s' = 173);
+[tick] s = 169 -> 
+	1 : (s' = 174);
+[tick] s = 160 -> 
+	0.185 : (s' = 175)
+	+ 0.63 : (s' = 176)
+	+ 0.185 : (s' = 177);
+[tick] s = 177 -> 
+	1 : (s' = 178);
+[tick] s = 176 -> 
+	1 : (s' = 179);
+[tick] s = 175 -> 
+	1 : (s' = 180);
+[tick] s = 136 -> 
+	0.185 : (s' = 181)
+	+ 0.63 : (s' = 182)
+	+ 0.185 : (s' = 183);
+[tick] s = 183 -> 
+	0.185 : (s' = 184)
+	+ 0.63 : (s' = 185)
+	+ 0.185 : (s' = 186);
+[tick] s = 186 -> 
+	1 : (s' = 187);
+[tick] s = 185 -> 
+	1 : (s' = 188);
+[tick] s = 184 -> 
+	1 : (s' = 189);
+[tick] s = 182 -> 
+	0.185 : (s' = 190)
+	+ 0.63 : (s' = 191)
+	+ 0.185 : (s' = 192);
+[tick] s = 192 -> 
+	1 : (s' = 193);
+[tick] s = 191 -> 
+	1 : (s' = 194);
+[tick] s = 190 -> 
+	1 : (s' = 195);
+[tick] s = 181 -> 
+	0.185 : (s' = 196)
+	+ 0.63 : (s' = 197)
+	+ 0.185 : (s' = 198);
+[tick] s = 198 -> 
+	1 : (s' = 199);
+[tick] s = 197 -> 
+	1 : (s' = 200);
+[tick] s = 196 -> 
+	1 : (s' = 201);
+[tick] (s = 13 | s = 14 | s = 15 | s = 19 | s = 20 | s = 21 | s = 25 | s = 26 | s = 27 | s = 34 | s = 35 | s = 36 | s = 40 | s = 41 | s = 42 | s = 46 | s = 47 | s = 48 | s = 55 | s = 56 | s = 57 | s = 61 | s = 62 | s = 63 | s = 67 | s = 68 | s = 69 | s = 79 | s = 80 | s = 81 | s = 85 | s = 86 | s = 87 | s = 91 | s = 92 | s = 93 | s = 100 | s = 101 | s = 102 | s = 106 | s = 107 | s = 108 | s = 112 | s = 113 | s = 114 | s = 121 | s = 122 | s = 123 | s = 127 | s = 128 | s = 129 | s = 133 | s = 134 | s = 135 | s = 145 | s = 146 | s = 147 | s = 151 | s = 152 | s = 153 | s = 157 | s = 158 | s = 159 | s = 166 | s = 167 | s = 168 | s = 172 | s = 173 | s = 174 | s = 178 | s = 179 | s = 180 | s = 187 | s = 188 | s = 189 | s = 193 | s = 194 | s = 195 | s = 199 | s = 200 | s = 201) -> 1 : true;
+endmodule
+formula stateValue = (s = 0 ? 0.00542219 : 0) + 
+                     (s = 3 ? 0.0058019 : 0) + 
+                     (s = 6 ? 0.00613341 : 0) + 
+                     (s = 9 ? 0.00647093 : 0) + 
+                     (s = 12 ? 0.00683459 : 0) + 
+                     (s = 13 ? 0.006665 : 0) + 
+                     (s = 11 ? 0.00634498 : 0) + 
+                     (s = 14 ? 0.00623415 : 0) + 
+                     (s = 10 ? 0.00585538 : 0) + 
+                     (s = 15 ? 0.00580329 : 0) + 
+                     (s = 8 ? 0.00604796 : 0) + 
+                     (s = 18 ? 0.00638176 : 0) + 
+                     (s = 19 ? 0.00626651 : 0) + 
+                     (s = 17 ? 0.00597277 : 0) + 
+                     (s = 20 ? 0.0059066 : 0) + 
+                     (s = 16 ? 0.00556378 : 0) + 
+                     (s = 21 ? 0.00554669 : 0) + 
+                     (s = 7 ? 0.00562499 : 0) + 
+                     (s = 24 ? 0.00596396 : 0) + 
+                     (s = 25 ? 0.00589885 : 0) + 
+                     (s = 23 ? 0.00560055 : 0) + 
+                     (s = 26 ? 0.00557905 : 0) + 
+                     (s = 22 ? 0.00523714 : 0) + 
+                     (s = 27 ? 0.00525925 : 0) + 
+                     (s = 5 ? 0.00575623 : 0) + 
+                     (s = 30 ? 0.00608888 : 0) + 
+                     (s = 33 ? 0.00642429 : 0) + 
+                     (s = 34 ? 0.00630394 : 0) + 
+                     (s = 32 ? 0.00600878 : 0) + 
+                     (s = 35 ? 0.00593829 : 0) + 
+                     (s = 31 ? 0.00559326 : 0) + 
+                     (s = 36 ? 0.00557263 : 0) + 
+                     (s = 29 ? 0.00571605 : 0) + 
+                     (s = 39 ? 0.00605014 : 0) + 
+                     (s = 40 ? 0.00597469 : 0) + 
+                     (s = 38 ? 0.00568068 : 0) + 
+                     (s = 41 ? 0.00564956 : 0) + 
+                     (s = 37 ? 0.00531122 : 0) + 
+                     (s = 42 ? 0.00532444 : 0) + 
+                     (s = 28 ? 0.00534321 : 0) + 
+                     (s = 45 ? 0.00571214 : 0) + 
+                     (s = 46 ? 0.00567724 : 0) + 
+                     (s = 44 ? 0.00535259 : 0) + 
+                     (s = 47 ? 0.00536084 : 0) + 
+                     (s = 43 ? 0.00499304 : 0) + 
+                     (s = 48 ? 0.00504444 : 0) + 
+                     (s = 4 ? 0.00537906 : 0) + 
+                     (s = 51 ? 0.0057429 : 0) + 
+                     (s = 54 ? 0.00607598 : 0) + 
+                     (s = 55 ? 0.00599742 : 0) + 
+                     (s = 53 ? 0.00570431 : 0) + 
+                     (s = 56 ? 0.00567036 : 0) + 
+                     (s = 52 ? 0.00533264 : 0) + 
+                     (s = 57 ? 0.00534329 : 0) + 
+                     (s = 50 ? 0.00538413 : 0) + 
+                     (s = 60 ? 0.00574728 : 0) + 
+                     (s = 61 ? 0.00570817 : 0) + 
+                     (s = 59 ? 0.0053886 : 0) + 
+                     (s = 62 ? 0.00539253 : 0) + 
+                     (s = 58 ? 0.00502991 : 0) + 
+                     (s = 63 ? 0.00507688 : 0) + 
+                     (s = 49 ? 0.00502537 : 0) + 
+                     (s = 66 ? 0.00545493 : 0) + 
+                     (s = 67 ? 0.0054509 : 0) + 
+                     (s = 65 ? 0.00507288 : 0) + 
+                     (s = 68 ? 0.0051147 : 0) + 
+                     (s = 64 ? 0.00469084 : 0) + 
+                     (s = 69 ? 0.0047785 : 0) + 
+                     (s = 2 ? 0.00543652 : 0) + 
+                     (s = 72 ? 0.00579298 : 0) + 
+                     (s = 75 ? 0.00612467 : 0) + 
+                     (s = 78 ? 0.00646176 : 0) + 
+                     (s = 79 ? 0.00633691 : 0) + 
+                     (s = 77 ? 0.00604027 : 0) + 
+                     (s = 80 ? 0.005966 : 0) + 
+                     (s = 76 ? 0.00561879 : 0) + 
+                     (s = 81 ? 0.0055951 : 0) + 
+                     (s = 74 ? 0.00574839 : 0) + 
+                     (s = 84 ? 0.00608128 : 0) + 
+                     (s = 85 ? 0.00600209 : 0) + 
+                     (s = 83 ? 0.00570914 : 0) + 
+                     (s = 86 ? 0.00567461 : 0) + 
+                     (s = 82 ? 0.005337 : 0) + 
+                     (s = 87 ? 0.00534712 : 0) + 
+                     (s = 73 ? 0.0053721 : 0) + 
+                     (s = 90 ? 0.0057369 : 0) + 
+                     (s = 91 ? 0.00569903 : 0) + 
+                     (s = 89 ? 0.00537801 : 0) + 
+                     (s = 92 ? 0.00538321 : 0) + 
+                     (s = 88 ? 0.00501912 : 0) + 
+                     (s = 93 ? 0.00506739 : 0) + 
+                     (s = 71 ? 0.0054347 : 0) + 
+                     (s = 96 ? 0.00579138 : 0) + 
+                     (s = 99 ? 0.00612311 : 0) + 
+                     (s = 100 ? 0.00603889 : 0) + 
+                     (s = 98 ? 0.00574698 : 0) + 
+                     (s = 101 ? 0.0057079 : 0) + 
+                     (s = 97 ? 0.00537085 : 0) + 
+                     (s = 102 ? 0.00537691 : 0) + 
+                     (s = 95 ? 0.00543309 : 0) + 
+                     (s = 105 ? 0.00578997 : 0) + 
+                     (s = 106 ? 0.00574574 : 0) + 
+                     (s = 104 ? 0.00543168 : 0) + 
+                     (s = 107 ? 0.00543044 : 0) + 
+                     (s = 103 ? 0.0050734 : 0) + 
+                     (s = 108 ? 0.00511515 : 0) + 
+                     (s = 94 ? 0.00507481 : 0) + 
+                     (s = 111 ? 0.0054932 : 0) + 
+                     (s = 112 ? 0.00548458 : 0) + 
+                     (s = 110 ? 0.00511639 : 0) + 
+                     (s = 113 ? 0.00515299 : 0) + 
+                     (s = 109 ? 0.00473959 : 0) + 
+                     (s = 114 ? 0.0048214 : 0) + 
+                     (s = 70 ? 0.00507641 : 0) + 
+                     (s = 117 ? 0.00549445 : 0) + 
+                     (s = 120 ? 0.00584445 : 0) + 
+                     (s = 121 ? 0.00579368 : 0) + 
+                     (s = 119 ? 0.00548568 : 0) + 
+                     (s = 122 ? 0.00547796 : 0) + 
+                     (s = 118 ? 0.0051269 : 0) + 
+                     (s = 123 ? 0.00516224 : 0) + 
+                     (s = 116 ? 0.0051178 : 0) + 
+                     (s = 126 ? 0.00552697 : 0) + 
+                     (s = 127 ? 0.0055143 : 0) + 
+                     (s = 125 ? 0.00515423 : 0) + 
+                     (s = 128 ? 0.00518628 : 0) + 
+                     (s = 124 ? 0.00478148 : 0) + 
+                     (s = 129 ? 0.00485827 : 0) + 
+                     (s = 115 ? 0.00474116 : 0) + 
+                     (s = 132 ? 0.00524549 : 0) + 
+                     (s = 133 ? 0.00526659 : 0) + 
+                     (s = 131 ? 0.00482278 : 0) + 
+                     (s = 134 ? 0.00489461 : 0) + 
+                     (s = 130 ? 0.00440007 : 0) + 
+                     (s = 135 ? 0.00452262 : 0) + 
+                     (s = 1 ? 0.00507114 : 0) + 
+                     (s = 138 ? 0.00549034 : 0) + 
+                     (s = 141 ? 0.00584076 : 0) + 
+                     (s = 144 ? 0.00617171 : 0) + 
+                     (s = 145 ? 0.00608167 : 0) + 
+                     (s = 143 ? 0.00579043 : 0) + 
+                     (s = 146 ? 0.00574614 : 0) + 
+                     (s = 142 ? 0.00540915 : 0) + 
+                     (s = 147 ? 0.00541062 : 0) + 
+                     (s = 140 ? 0.00548206 : 0) + 
+                     (s = 150 ? 0.00583336 : 0) + 
+                     (s = 151 ? 0.00578392 : 0) + 
+                     (s = 149 ? 0.00547477 : 0) + 
+                     (s = 152 ? 0.00546836 : 0) + 
+                     (s = 148 ? 0.00511618 : 0) + 
+                     (s = 153 ? 0.0051528 : 0) + 
+                     (s = 139 ? 0.00512335 : 0) + 
+                     (s = 156 ? 0.00553137 : 0) + 
+                     (s = 157 ? 0.00551816 : 0) + 
+                     (s = 155 ? 0.00515911 : 0) + 
+                     (s = 158 ? 0.00519058 : 0) + 
+                     (s = 154 ? 0.00478685 : 0) + 
+                     (s = 159 ? 0.00486299 : 0) + 
+                     (s = 137 ? 0.00511316 : 0) + 
+                     (s = 162 ? 0.0055233 : 0) + 
+                     (s = 165 ? 0.00587045 : 0) + 
+                     (s = 166 ? 0.00581656 : 0) + 
+                     (s = 164 ? 0.00551107 : 0) + 
+                     (s = 167 ? 0.0055003 : 0) + 
+                     (s = 163 ? 0.00515169 : 0) + 
+                     (s = 168 ? 0.00518405 : 0) + 
+                     (s = 161 ? 0.00515014 : 0) + 
+                     (s = 171 ? 0.00555269 : 0) + 
+                     (s = 172 ? 0.00553693 : 0) + 
+                     (s = 170 ? 0.00518269 : 0) + 
+                     (s = 173 ? 0.00521133 : 0) + 
+                     (s = 169 ? 0.00481268 : 0) + 
+                     (s = 174 ? 0.00488572 : 0) + 
+                     (s = 160 ? 0.00477698 : 0) + 
+                     (s = 177 ? 0.005271 : 0) + 
+                     (s = 178 ? 0.00528904 : 0) + 
+                     (s = 176 ? 0.00485431 : 0) + 
+                     (s = 179 ? 0.00492235 : 0) + 
+                     (s = 175 ? 0.00443761 : 0) + 
+                     (s = 180 ? 0.00455566 : 0) + 
+                     (s = 136 ? 0.00473599 : 0) + 
+                     (s = 183 ? 0.00524183 : 0) + 
+                     (s = 186 ? 0.00562712 : 0) + 
+                     (s = 187 ? 0.00560243 : 0) + 
+                     (s = 185 ? 0.00526337 : 0) + 
+                     (s = 188 ? 0.00528233 : 0) + 
+                     (s = 184 ? 0.00489962 : 0) + 
+                     (s = 189 ? 0.00496223 : 0) + 
+                     (s = 182 ? 0.00481823 : 0) + 
+                     (s = 192 ? 0.00530066 : 0) + 
+                     (s = 193 ? 0.00531514 : 0) + 
+                     (s = 191 ? 0.0048906 : 0) + 
+                     (s = 194 ? 0.00495429 : 0) + 
+                     (s = 190 ? 0.00448054 : 0) + 
+                     (s = 195 ? 0.00459344 : 0) + 
+                     (s = 181 ? 0.00439463 : 0) + 
+                     (s = 198 ? 0.00500909 : 0) + 
+                     (s = 199 ? 0.00505856 : 0) + 
+                     (s = 197 ? 0.00451784 : 0) + 
+                     (s = 200 ? 0.00462626 : 0) + 
+                     (s = 196 ? 0.00402658 : 0) + 
+                     (s = 201 ? 0.00419396 : 0);
+
+
+module clk
+	time : [0..HORIZON + 1] init 0;
+	readyToTick : bool init true;
+	[tick] readyToTick & time < HORIZON + 1 -> 1 : (time' = time + 1) & (readyToTick'=false);
+	[tack] !readyToTick -> 1 : (readyToTick'=true);
+endmodule
+
+label "final" = time = HORIZON + 1;
+formula sys_go = readyToTick;
+
+module controller
+	active_servers_A : [0..MAX_SERVERS_A] init ini_servers_A;
+	active_servers_B : [0..MAX_SERVERS_B] init ini_servers_B;
+	active_servers_C : [0..MAX_SERVERS_C] init ini_servers_C;
+
+	dimmer : [1..DIMMER_LEVELS] init ini_dimmer;
+
+	traffic_A : [0..4] init ini_traffic_A;
+	traffic_B : [0..4] init ini_traffic_B;
+	traffic_C : [0..4] init ini_traffic_C;
+
+	[addServerA_complete] active_servers_A < MAX_SERVERS_A -> 1 : (active_servers_A' = active_servers_A + 1);
+	[addServerB_complete] active_servers_B < MAX_SERVERS_B -> 1 : (active_servers_B' = active_servers_B + 1);
+	[addServerC_complete] active_servers_C < MAX_SERVERS_C -> 1 : (active_servers_C' = active_servers_C + 1);
+
+	[removeServerA_start] active_servers_A > 0 -> 1 : (active_servers_A' = active_servers_A - 1);
+	[removeServerB_start] active_servers_B > 0 -> 1 : (active_servers_B' = active_servers_B - 1);
+	[removeServerC_start] active_servers_C > 0 -> 1 : (active_servers_C' = active_servers_C - 1);
+
+	[increaseDimmer_start] dimmer < DIMMER_LEVELS -> 1 : (dimmer' = dimmer + 1);
+	[decreaseDimmer_start] dimmer > 1 -> 1 : (dimmer' = dimmer - 1);
+
+	//A-B-C
+	//Possible values 0-25-50-75-100
+
+	// 100-0-0
+	[divert_100_0_0] active_servers_A > 0
+		-> 1 : (traffic_A' = 4) & (traffic_B' = 0) & (traffic_C' = 0);
+	// 75-25-0
+	[divert_75_25_0] active_servers_A > 0 & active_servers_B > 0
+		-> 1 : (traffic_A' = 3) & (traffic_B' = 1) & (traffic_C' = 0);
+	// 75-0-25
+	[divert_75_0_25] active_servers_A > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 3) & (traffic_B' = 0) & (traffic_C' = 1);
+	// 50-50-0
+	[divert_50_50_0] active_servers_A > 0 & active_servers_B > 0
+		-> 1 : (traffic_A' = 2) & (traffic_B' = 2) & (traffic_C' = 0);
+	// 50-0-50
+	[divert_50_0_50] active_servers_A > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 2) & (traffic_B' = 0) & (traffic_C' = 2);
+	// 50-25-25
+	[divert_50_25_25] active_servers_A > 0 & active_servers_B > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 2) & (traffic_B' = 1) & (traffic_C' = 1);
+	// 25-75-0
+	[divert_25_75_0] active_servers_A > 0 & active_servers_B > 0
+		-> 1 : (traffic_A' = 1) & (traffic_B' = 3) & (traffic_C' = 0);
+	// 25-0-75
+	[divert_25_0_75] active_servers_A > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 1) & (traffic_B' = 0) & (traffic_C' = 3);
+	// 25-50-25
+	[divert_25_50_25] active_servers_A > 0 & active_servers_B > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 1) & (traffic_B' = 2) & (traffic_C' = 1);
+	// 25-25-50
+	[divert_25_25_50] active_servers_A > 0 & active_servers_B > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 1) & (traffic_B' = 1) & (traffic_C' = 2);
+	// 0-100-0
+	[divert_0_100_0] active_servers_B > 0
+		-> 1 : (traffic_A' = 0) & (traffic_B' = 4) & (traffic_C' = 0);
+	// 0-0-100
+	[divert_0_0_100] active_servers_C > 0
+		-> 1 : (traffic_A' = 0) & (traffic_B' = 0) & (traffic_C' = 4);
+	// 0-75-25
+	[divert_0_75_25] active_servers_B > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 0) & (traffic_B' = 3) & (traffic_C' = 1);
+	// 0-25-75
+	[divert_0_25_75] active_servers_B > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 0) & (traffic_B' = 1) & (traffic_C' = 3);
+	// 0-50-50
+	[divert_0_50_50] active_servers_B > 0 & active_servers_C > 0
+		-> 1 : (traffic_A' = 0) & (traffic_B' = 2) & (traffic_C' = 2);
+endmodule
+
+
+formula addServerA_applicable = active_servers_A < MAX_SERVERS_A & !removeServer_used
+				& addServerB_state = 0 & addServerC_state = 0;
+formula addServerB_applicable = active_servers_B < MAX_SERVERS_B & !removeServer_used
+				& addServerA_state = 0 & addServerC_state = 0;
+formula addServerC_applicable = active_servers_C < MAX_SERVERS_C & !removeServer_used
+				& addServerA_state = 0 & addServerB_state = 0;
+
+// Two variables not required i.e. active_servers_A , addServerA_state
+formula removeServerA_applicable = active_servers_A > 0 & addServerA_state = 0 & active_servers > 1
+					 & addServerB_state = 0 & addServerC_state = 0;
+formula removeServerB_applicable = active_servers_B > 0 & addServerB_state = 0 & active_servers > 1
+					& addServerA_state = 0 & addServerC_state = 0;
+formula removeServerC_applicable = active_servers_C > 0 & addServerC_state = 0 & active_servers > 1
+					& addServerA_state = 0 & addServerB_state = 0;
+
+formula increaseDimmer_compatible = !decreaseDimmer_used;
+formula decreaseDimmer_compatible = !increaseDimmer_used;
+formula increase_dimmer_applicable = dimmer < DIMMER_LEVELS & increaseDimmer_compatible;
+formula decrease_dimmer_applicable = dimmer > 1 & decreaseDimmer_compatible;
+
+const int addServer_LATENCY_PERIODS = ceil(addServer_LATENCY / PERIOD);
+
+// This remove server constraints that only one server could be removed in one monitoring cycle.
+module removeServer
+	removeServer_go : bool init true;
+	removeServer_used : bool init false;
+
+	[removeServerA_start] sys_go & removeServer_go
+		& removeServerA_applicable // applicability conditions
+		-> (removeServer_go' = false) & (removeServer_used' = true);
+
+	[removeServerB_start] sys_go & removeServer_go
+		& removeServerB_applicable // applicability conditions
+		-> (removeServer_go' = false) & (removeServer_used' = true);
+
+	[removeServerC_start] sys_go & removeServer_go
+		& removeServerC_applicable // applicability conditions
+		-> (removeServer_go' = false) & (removeServer_used' = true);
+
+	// tactic applicable but not used
+	[pass_remove_server] sys_go & removeServer_go // can go
+		-> (removeServer_go' = false);
+
+	[tick] !removeServer_go -> 1 : (removeServer_go' = true) & (removeServer_used' = false);
+endmodule
+
+module addServer
+	addServerA_state : [0..addServer_LATENCY_PERIODS] init ini_addServerA_state;
+	addServerB_state : [0..addServer_LATENCY_PERIODS] init ini_addServerB_state;
+	addServerC_state : [0..addServer_LATENCY_PERIODS] init ini_addServerC_state;
+
+	addServer_go : bool init true;
+
+	// tactic applicable, start it
+	[addServerA_start] sys_go & addServer_go // can go
+		& addServerA_state = 0 // tactic has not been started
+		& addServerA_applicable
+		-> (addServerA_state' = 1) & (addServer_go' = false);
+
+	// tactic applicable, start it
+	[addServerB_start] sys_go & addServer_go // can go
+		& addServerB_state = 0 // tactic has not been started
+		& addServerB_applicable
+		-> (addServerB_state' = 1) & (addServer_go' = false);
+
+	// tactic applicable, start it
+	[addServerC_start] sys_go & addServer_go // can go
+		& addServerC_state = 0 // tactic has not been started
+		& addServerC_applicable
+		-> (addServerC_state' = 1) & (addServer_go' = false);
+
+	// tactic applicable, but don't use it
+	[pass_add] sys_go & addServer_go // can go
+		& addServerA_state = 0 // tactic has not been started
+		& addServerB_state = 0 & addServerC_state = 0
+		//& addServerA_applicable
+		-> (addServer_go' = false);
+
+	// progress of the tactic
+	[progressA] sys_go & addServer_go
+		& addServerA_state > 0 & addServerA_state < addServer_LATENCY_PERIODS
+		-> 1 : (addServerA_state' = addServerA_state + 1) & (addServer_go' = false);
+
+	[progressB] sys_go & addServer_go
+		& addServerB_state > 0 & addServerB_state < addServer_LATENCY_PERIODS
+		-> 1 : (addServerB_state' = addServerB_state + 1) & (addServer_go' = false);
+
+	[progressC] sys_go & addServer_go
+		& addServerC_state > 0 & addServerC_state < addServer_LATENCY_PERIODS
+		-> 1 : (addServerC_state' = addServerC_state + 1) & (addServer_go' = false);
+
+	// completion of the tactic
+	[addServerA_complete] sys_go & addServer_go
+		& addServerA_state = addServer_LATENCY_PERIODS // completed
+		-> 1 : (addServerA_state' = 0) & (addServer_go' = true); // so that it can start again at this time if needed
+
+	[addServerB_complete] sys_go & addServer_go
+		& addServerB_state = addServer_LATENCY_PERIODS // completed
+		-> 1 : (addServerB_state' = 0) & (addServer_go' = true); // so that it can start again at this time if needed
+
+	[addServerC_complete] sys_go & addServer_go
+		& addServerC_state = addServer_LATENCY_PERIODS // completed
+		-> 1 : (addServerC_state' = 0) & (addServer_go' = true); // so that it can start again at this time if needed
+	
+	[tick] !addServer_go -> 1 : (addServer_go' = true);
+endmodule
+
+// Make sure that divert traffic is executed at the end i.e.after adding or removing the servers.
+formula divert_traffic_applicable = divert_go & !addServer_go & !removeServer_go & !increaseDimmer_go & !decreaseDimmer_go;
+
+module divert_traffic
+	divert_go : bool init true;
+
+	//A-B-C
+	//Possible values 0-25-50-75-100
+
+	// 100-0-0
+	[divert_100_0_0] sys_go & divert_traffic_applicable 
+		-> 1 : (divert_go'=false);
+	// 75-25-0
+	[divert_75_25_0] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 75-0-25
+	[divert_75_0_25] sys_go & divert_traffic_applicable 
+		-> 1 : (divert_go'=false);
+	// 50-50-0
+	[divert_50_50_0] sys_go & divert_traffic_applicable 
+		-> 1 : (divert_go'=false);
+	// 50-0-50
+	[divert_50_0_50] sys_go & divert_traffic_applicable 
+		-> 1 : (divert_go'=false);
+	// 50-25-25
+	[divert_50_25_25] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 25-75-0
+	[divert_25_75_0] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 25-0-75
+	[divert_25_0_75] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 25-50-25
+	[divert_25_50_25] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 25-25-50
+	[divert_25_25_50] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 0-100-0
+	[divert_0_100_0] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 0-0-100
+	[divert_0_0_100] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 0-75-25
+	[divert_0_75_25] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 0-25-75
+	[divert_0_25_75] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+	// 0-50-50
+	[divert_0_50_50] sys_go & divert_traffic_applicable
+		-> 1 : (divert_go'=false);
+
+	[tick] !divert_go -> 1 : (divert_go' = true);
+endmodule
+
+module increaseDimmer
+	increaseDimmer_go : bool init true;
+	increaseDimmer_used : bool init false;
+
+	[increaseDimmer_start] sys_go & increaseDimmer_go
+		& increase_dimmer_applicable // applicability conditions
+		-> (increaseDimmer_go' = false) & (increaseDimmer_used' = true);
+
+	// tactic applicable but not used
+	[pass_inc_dimmer] sys_go & increaseDimmer_go // can go
+		-> (increaseDimmer_go' = false);
+
+	[tick] !increaseDimmer_go -> 1 : (increaseDimmer_go' = true) & (increaseDimmer_used' = false);
+endmodule
+
+// tactic
+module decreaseDimmer
+	decreaseDimmer_go : bool init true;
+	decreaseDimmer_used : bool init false;
+
+	[decreaseDimmer_start] sys_go & decreaseDimmer_go
+		& decrease_dimmer_applicable // applicability conditions
+		-> (decreaseDimmer_go' = false) & (decreaseDimmer_used' = true);
+
+	// tactic applicable but not used
+	[pass_dec_dimmer] sys_go & decreaseDimmer_go // can go
+		-> (decreaseDimmer_go' = false);
+
+	[tick] !decreaseDimmer_go -> 1 : (decreaseDimmer_go' = true) & (decreaseDimmer_used' = false);
+endmodule
+
+//*****************************************************************
+// Queuing network with each server having queueing model of M/M/1 
+//*****************************************************************
+formula dimmerFactor = (dimmer - 1) / (DIMMER_LEVELS - 1);
+formula interarrivalMean = stateValue * interArrivalScaleFactorForDecision;
+
+formula Pa = (traffic_A * 25)/100;
+formula Pb = (traffic_B * 25)/100;
+formula Pc = (traffic_C * 25)/100;
+
+formula loaded_servers = (Pa != 0 ? 1 : 0) + (Pb != 0 ? 1 : 0) + (Pc != 0 ? 1 : 0);
+
+formula service_rate_A = dimmerFactor * (MAX_ARRIVALA_CAPACITY_LOW) 
+			+ (1 - dimmerFactor) * (MAX_ARRIVALA_CAPACITY);
+formula service_rate_B = dimmerFactor * (MAX_ARRIVALB_CAPACITY_LOW) 
+			+ (1 - dimmerFactor) * (MAX_ARRIVALB_CAPACITY);
+formula service_rate_C = dimmerFactor * (MAX_ARRIVALC_CAPACITY_LOW) 
+			+ (1 - dimmerFactor) * (MAX_ARRIVALC_CAPACITY);
+
+formula rhoA = Pa/(service_rate_A*interarrivalMean);
+formula rhoB = Pb/(service_rate_B*interarrivalMean);
+formula rhoC = Pc/(service_rate_C*interarrivalMean);
+
+formula overloaded = (rhoA >= 1 | rhoB >= 1 | rhoC >= 1);
+//const double DBL_MAX = 1.5e+300;
+
+formula rt_A = 1/(service_rate_A - (throughput*Pa));
+formula rt_B = 1/(service_rate_B - (throughput*Pb));
+formula rt_C = 1/(service_rate_C - (throughput*Pc));
+
+// Response time to clients utility function
+const double RT_THRESHOLD = 1.0;
+
+//formula expected_wait_time = interarrivalMean * (rhoA/(1-rhoA) + rhoB/(1-rhoB) + rhoC/(1-rhoC));
+formula expected_wait_time = (Pa*rt_A + Pb*rt_B + Pc*rt_C);
+formula rt = (interarrivalMean = 0 ? 0 : (overloaded ? RT_THRESHOLD + 2 : expected_wait_time));
+
+
+
+//const double NORMAL_A_REVENUE = (SERVERA_COST_SEC / MAX_ARRIVALA_CAPACITY) * 10;
+//const double DIMMER_A_REVENUE = (SERVERA_COST_SEC / MAX_ARRIVALA_CAPACITY_LOW) * 3 / 2;
+//const double NORMAL_B_REVENUE = (SERVERB_COST_SEC / MAX_ARRIVALB_CAPACITY) * 10;
+//const double DIMMER_B_REVENUE = (SERVERB_COST_SEC / MAX_ARRIVALB_CAPACITY_LOW) * 3 / 2;
+//const double NORMAL_C_REVENUE = (SERVERC_COST_SEC / MAX_ARRIVALC_CAPACITY) * 10;
+//const double DIMMER_C_REVENUE = (SERVERC_COST_SEC / MAX_ARRIVALC_CAPACITY_LOW) * 3 / 2;
+const double NORMAL_A_REVENUE = (SERVERA_COST_SEC / MAX_ARRIVALA_CAPACITY) * 10;
+const double DIMMER_A_REVENUE = (SERVERA_COST_SEC / MAX_ARRIVALA_CAPACITY_LOW) * 3 / 2;
+const double NORMAL_B_REVENUE = (SERVERB_COST_SEC / MAX_ARRIVALB_CAPACITY) * 10;
+const double DIMMER_B_REVENUE = (SERVERB_COST_SEC / MAX_ARRIVALB_CAPACITY_LOW) * 3 / 2;
+const double NORMAL_C_REVENUE = (SERVERC_COST_SEC / MAX_ARRIVALC_CAPACITY) * 10;
+const double DIMMER_C_REVENUE = (SERVERC_COST_SEC / MAX_ARRIVALC_CAPACITY_LOW) * 3 / 2;
+
+const double DIMMER_REVENUE = DIMMER_A_REVENUE + DIMMER_B_REVENUE + DIMMER_C_REVENUE;
+const double NORMAL_REVENUE = NORMAL_A_REVENUE + NORMAL_B_REVENUE + NORMAL_C_REVENUE;
+
+formula serverA_cost = ((addServerA_state > 0 ? 1 : 0) + active_servers_A) * SERVERA_COST_SEC;
+formula serverB_cost = ((addServerB_state > 0 ? 1 : 0) + active_servers_B) * SERVERB_COST_SEC;
+formula serverC_cost = ((addServerC_state > 0 ? 1 : 0) + active_servers_C) * SERVERC_COST_SEC;
+formula cost = serverA_cost + serverB_cost + serverC_cost;
+
+formula throughput = 1/interarrivalMean;
+
+formula basicUtilityA = throughput * Pa * (dimmerFactor * DIMMER_A_REVENUE + (1 - dimmerFactor) * NORMAL_A_REVENUE);
+formula basicUtilityB = throughput * Pb * (dimmerFactor * DIMMER_B_REVENUE + (1 - dimmerFactor) * NORMAL_B_REVENUE);
+formula basicUtilityC = throughput * Pc * (dimmerFactor * DIMMER_C_REVENUE + (1 - dimmerFactor) * NORMAL_C_REVENUE);
+
+formula basicUtility = basicUtilityA + basicUtilityB + basicUtilityC;
+//formula basicUtility = throughput * (dimmerFactor * DIMMER_REVENUE + (1-dimmerFactor) * NORMAL_REVENUE);
+formula active_servers = active_servers_A + active_servers_B + active_servers_C;
+formula poweredServers = (addServerA_state > 0 ? 1 : 0) + (addServerB_state > 0 ? 1 : 0) + (addServerC_state > 0 ? 1 : 0 )
+	 + active_servers;
+formula MAX_SERVERS = MAX_SERVERS_A + MAX_SERVERS_B + MAX_SERVERS_C;
+
+formula MAX_SERVER_COST = MAX_SERVERS_A * SERVERA_COST_SEC
+			+ MAX_SERVERS_B * SERVERB_COST_SEC
+			+ MAX_SERVERS_C * SERVERC_COST_SEC;
+
+formula netPenalty = stateValue > 0 ? penalty / stateValue : 0;
+
+formula uTotal = (overloaded & (poweredServers < MAX_SERVERS | dimmer < DIMMER_LEVELS | active_servers != loaded_servers))
+					? -(1000) // avoid unstable solutions
+				: (((rt > RT_THRESHOLD | rt <= 0) ? netPenalty : basicUtility) - cost);
+
+
+rewards "util"
+	[tack] true : 100000000.0 + (PERIOD)*(uTotal);
+endrewards
+
+
