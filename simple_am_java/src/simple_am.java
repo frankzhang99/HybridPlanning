@@ -1,12 +1,28 @@
 import java.net.*;
+import java.util.Random;
+import java.util.concurrent.*;
+
+import pladapt.EnvironmentDTMCPartitioned;
+import pladapt.PMCAdaptationManager;
+import pladapt.TimeSeriesPredictor;
 
 public class simple_am{
 
 	final static int NUMBER_OF_DIMMER_LEVELS = 3;
 	final static double DIMMER_STEP = 1.0 / (NUMBER_OF_DIMMER_LEVELS - 1);
 	final static double RT_THRESHOLD = 1.00;
-	final static int PERIOD = 500;
-
+	final static int PERIOD = 5000;
+	final static double SERVERA_COST_SEC = 1;
+	final static double SERVERB_COST_SEC = 0.7;
+	final static double SERVERC_COST_SEC = 0.5;
+	final static int MAX_ARRIVAL_CAPACITY_A = 200;
+	final static int MAX_ARRIVAL_CAPACITY_LOW_A = 400;
+	final static int MAX_ARRIVAL_CAPACITY_B = 140;
+	final static int MAX_ARRIVAL_CAPACITY_LOW_B = 280;
+	final static int MAX_ARRIVAL_CAPACITY_C = 100;
+	final static int MAX_ARRIVAL_CAPACITY_LOW_C = 200;
+	final static double PENALTY = -0.25;
+	
 	
 	
 	public String getDivertTrafficCommand(int activeServersA, int activeServersB, int activeServersC) {
@@ -117,17 +133,17 @@ public class simple_am{
 	    boolean test = true;
 	    
 	    while (swim.isConnected()) {
-		    System.out.println("here2");
+		    //System.out.println("here2");
 	    	if (test) {
-	            swim.increaseDimmer();
-	            swim.increaseDimmer();
-	            swim.increaseDimmer();
-	    		swim.addServer(SwimClient.ServerType.C);
-		    	System.out.println("here3");
-	            swim.decreaseDimmer();
-	            swim.decreaseDimmer();
-	            swim.decreaseDimmer();
-	            swim.decreaseDimmer();
+	            //swim.increaseDimmer();
+	            //swim.increaseDimmer();
+	            //swim.increaseDimmer();
+	    		//swim.addServer(SwimClient.ServerType.C);
+		    	//System.out.println("here3");
+	            //swim.decreaseDimmer();
+	            //swim.decreaseDimmer();
+	            //swim.decreaseDimmer();
+	            //swim.decreaseDimmer();
 	            //return;
 	            test = false;
 	        }
@@ -150,22 +166,24 @@ public class simple_am{
 	    }
 	}
 	
+	
+	
 	public static void main(String[] args) throws InterruptedException{
 		// TODO Auto-generated method stub
-		System.out.println("hello world\n");
+		System.out.println("hello world");
 		
-		//testing SWIG
 		{
 			try {
 				System.load("/home/frank/swimExtended/swim/examples/simple_am_java/src/"
 						+ "module.so");
+				System.load("/home/frank/swimExtended/swim/examples/proactive_connect/src/libpladapt_wrap.so");
 			} catch(UnsatisfiedLinkError e) {
 				System.err.println("Native code library failed to load.\n" + e);
 				System.exit(1);
 			}
 		}
-		
-		System.out.println(example.fact(5));
+		System.out.println("libraries loaded");
+		//System.out.println(example.fact(5));
 		
 		
 		
@@ -183,24 +201,29 @@ public class simple_am{
         	}
 		}
 		
+		
 		SwimClient swim = new SwimClient(host, port);
 		simple_am am = new simple_am();
-		
+		HPModel hpModel = new HPModel();
+		//System.out.println(get_initial_state_str(hpModel));
+		String dtmc = hpModel.getDTMC();
+		System.out.println(dtmc);
 		
 		do {
 			try {
-				swim.connect();
-				Thread.sleep(1000);
+				//swim.connect();
+				Thread.sleep(500);
 				System.out.println("Waiting for SWIM...");
 			} catch (Exception e) {
-				System.out.println("THERE");
+				//System.out.println("THERE");
 			}
 		} while(!swim.isConnected());
-		
-		
-		
 		System.out.println("Connected to SWIM");
-		am.simpleAdaptationManager(swim);
+		
+		
+
+		
+		//am.simpleAdaptationManager(swim);
 		
 		
 	}

@@ -12,7 +12,7 @@ public class connect {
 			System.exit(1);
 		}
 		try{
-			System.load("/home/frank/swimExtended/swim/examples/prism_fix_path/Plan/module.so");
+			//System.load("/home/frank/swimExtended/swim/examples/prism_fix_path/Plan/module.so");
 		} catch(UnsatisfiedLinkError e){
 			System.err.println("Native code library failed to load.\n" + e);
 			System.exit(1);
@@ -24,7 +24,7 @@ public class connect {
 		//ap.test();
 		SWIGTYPE_p_std__string s = new SWIGTYPE_p_std__string();
 		//ap.plan("", "", s, false);
-		//ap.plan("", "");
+		ap.plan("", "");
 		
 		
 		System.out.println("DONE");
